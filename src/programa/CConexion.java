@@ -2,7 +2,9 @@ package programa;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 
@@ -39,5 +41,35 @@ public class CConexion {
 		return datos;
 	}
 	
+	public static void ingresarProducto(int id, String nombre, double precio, String marca, int existencias) throws SQLException {
+		Connection cn=getConexion();
+		PreparedStatement stm = cn.prepareStatement("INSERT INTO productos2 VALUES (?,?,?,?,?)");
+		stm.setInt(1,id);
+		stm.setString(2, nombre);
+		stm.setDouble(3,precio);
+		stm.setString(4, marca);
+		stm.setInt(5, existencias);
+		stm.executeUpdate();
+	}
+	
+	public static void actualizarProducto(int id, String nombre, double precio, String marca, int existencias) throws SQLException {
+		Connection cn=getConexion();
+		PreparedStatement stm = cn.prepareStatement("UPDATE productos2 SET nombre_producto=? ,precio=? ,marca=?, existencias=? WHERE id_producto="+id);
+		stm.setString(1, nombre);
+		stm.setDouble(2,precio);
+		stm.setString(3, marca);
+		stm.setInt(4, existencias);
+		stm.executeUpdate();
+	}
+	
+	public static void eliminarProducto(int id) throws SQLException {
+		Connection cn=getConexion();
+		PreparedStatement stm = cn.prepareStatement("UPDATE productos2 SET nombre_producto=? ,precio=? ,marca=?, existencias=? WHERE id_producto="+id);
+		stm.setString(1, "?");
+		stm.setDouble(2, 0.0);
+		stm.setString(3, "?");
+		stm.setInt(4, 0);
+		stm.executeUpdate();
+	}
 	
 }

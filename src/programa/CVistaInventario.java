@@ -2,7 +2,9 @@ package programa;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +16,10 @@ import javax.swing.table.DefaultTableModel;
 import programa.CConexion;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class CVistaInventario {
 
@@ -68,16 +74,59 @@ public class CVistaInventario {
 		frame.getContentPane().add(lblVistaDeTodos);
 		
 		JButton btnAgregarProducto = new JButton("Agregar Producto");
+		btnAgregarProducto.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				CVentanas.mostrarIngreso();
+			}
+		});
 		btnAgregarProducto.setBounds(54, 282, 131, 23);
 		frame.getContentPane().add(btnAgregarProducto);
 		
 		JButton btnActualizarProducto = new JButton("Actualizar Producto");
+		btnActualizarProducto.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				CVentanas.mostrarActualizar();
+			}
+		});
 		btnActualizarProducto.setBounds(233, 282, 131, 23);
 		frame.getContentPane().add(btnActualizarProducto);
 		
 		JButton btnEliminarProducto = new JButton("Eliminar Producto");
+		btnEliminarProducto.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				try {
+					CVentanas.eliminarProducto(Integer.parseInt(JOptionPane.showInputDialog("Ingrese el ID del producto")));
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (HeadlessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		btnEliminarProducto.setBounds(408, 282, 131, 23);
 		frame.getContentPane().add(btnEliminarProducto);
+		
+		JButton btnRecargar = new JButton("Recargar");
+		btnRecargar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+			}
+		});
+		btnRecargar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				mostrar();
+			}
+		});
+		btnRecargar.setBounds(408, 306, 131, 23);
+		frame.getContentPane().add(btnRecargar);
 		
 		mostrar();
 	}
@@ -86,10 +135,10 @@ public class CVistaInventario {
 		
 		DefaultTableModel modelo=new DefaultTableModel();
 		ResultSet rs=CConexion.getTabla("SELECT id_producto,nombre_producto,precio,marca,existencias FROM productos2");
-		modelo.setColumnIdentifiers(new Object[]{"id_producto","nombre_producto","precio","marca","existencias"});
+		modelo.setColumnIdentifiers(new Object[]{" ID producto","Nombre","Precio","Marca","Existencias"});
 		
 		try {
-			modelo.addRow(new Object[]{"id_producto","nombre_producto","precio","marca","existencias"});
+			modelo.addRow(new Object[]{" ID producto","Nombre","Precio","Marca","Existencias"});
 			while(rs.next()) {
 				modelo.addRow(new Object[]{rs.getString("id_producto"),rs.getString("nombre_producto"),
 				rs.getString("precio"),rs.getString("marca"),rs.getString("existencias")});
@@ -101,4 +150,3 @@ public class CVistaInventario {
 		
 	}
 }
-
