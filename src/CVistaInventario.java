@@ -1,17 +1,223 @@
-package programa;
-
+import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 
-public class CVentanas {
+public class CVistaInventario {
+
+	private JFrame frame;
+	private JTable table;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					CVistaInventario window = new CVistaInventario();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public CVistaInventario() {
+		initialize();
+		
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 606, 379);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		table = new JTable();
+		table.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+		table.setFillsViewportHeight(true);
+		table.setColumnSelectionAllowed(true);
+		table.setCellSelectionEnabled(true);
+		table.setBounds(54, 78, 485, 193);
+		frame.getContentPane().add(table);
+		
+		JLabel lblVistaDeTodos = new JLabel("Vista de todos los productos en el almacen ");
+		lblVistaDeTodos.setHorizontalAlignment(SwingConstants.CENTER);
+		lblVistaDeTodos.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblVistaDeTodos.setBounds(54, 27, 485, 33);
+		frame.getContentPane().add(lblVistaDeTodos);
+		
+		JButton btnAgregarProducto = new JButton("Agregar Producto");
+		btnAgregarProducto.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				JOptionPane.showMessageDialog(null,"Profe, cheque el ID manualmente en la ventana principal para ingresarlo en la BD");
+				CVentanas.mostrarIngreso();
+			}
+		});
+		btnAgregarProducto.setBounds(54, 282, 131, 23);
+		frame.getContentPane().add(btnAgregarProducto);
+		
+		JButton btnActualizarProducto = new JButton("Actualizar Producto");
+		btnActualizarProducto.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				CVentanas.mostrarActualizar();
+			}
+		});
+		btnActualizarProducto.setBounds(233, 282, 131, 23);
+		frame.getContentPane().add(btnActualizarProducto);
+		
+		JButton btnEliminarProducto = new JButton("Eliminar Producto");
+		btnEliminarProducto.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				try {
+					CVentanas.eliminarProducto(Integer.parseInt(JOptionPane.showInputDialog("Ingrese el ID del producto")));
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (HeadlessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		btnEliminarProducto.setBounds(408, 282, 131, 23);
+		frame.getContentPane().add(btnEliminarProducto);
+		
+		JButton btnRecargar = new JButton("Recargar");
+		btnRecargar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+			}
+		});
+		btnRecargar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				mostrar();
+			}
+		});
+		btnRecargar.setBounds(408, 306, 131, 23);
+		frame.getContentPane().add(btnRecargar);
+		
+		mostrar();
+	}
+	
+	public void mostrar() {
+		
+		DefaultTableModel modelo=new DefaultTableModel();
+		ResultSet rs=CConexion.getTabla("SELECT id_producto,nombre_producto,precio,marca,existencias FROM productos2");
+		modelo.setColumnIdentifiers(new Object[]{" ID producto","Nombre","Precio","Marca","Existencias"});
+		
+		try {
+			modelo.addRow(new Object[]{" ID producto","Nombre","Precio","Marca","Existencias"});
+			while(rs.next()) {
+				modelo.addRow(new Object[]{rs.getString("id_producto"),rs.getString("nombre_producto"),
+				rs.getString("precio"),rs.getString("marca"),rs.getString("existencias")});
+			}
+			table.setModel(modelo);
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, e.getStackTrace());
+		}
+	}
+}
+
+class CConexion {
+
+	private static String db="inventario";
+	private static String user="root";
+	private static String pass="JSevenfoldStadia@16";
+	private static String host="localhost:3306	";
+	private static String server="jdbc:mysql://"+host+"/"+db;
+	
+	public static Connection getConexion() {
+		Connection cn=null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			cn=DriverManager.getConnection(server, user, pass);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return cn;
+	}
+	
+	public static ResultSet getTabla(String consulta) {
+		Connection cn=getConexion();
+		Statement st;
+		ResultSet datos=null;
+		try {
+			st=cn.createStatement();
+			datos=st.executeQuery(consulta);
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, e.getStackTrace());
+		}
+		return datos;
+	}
+	
+	public static void ingresarProducto(int id, String nombre, double precio, String marca, int existencias) throws SQLException {
+		Connection cn=getConexion();
+		PreparedStatement stm = cn.prepareStatement("INSERT INTO productos2 VALUES (?,?,?,?,?)");
+		stm.setInt(1,id);
+		stm.setString(2, nombre);
+		stm.setDouble(3,precio);
+		stm.setString(4, marca);
+		stm.setInt(5, existencias);
+		stm.executeUpdate();
+	}
+	
+	public static void actualizarProducto(int id, String nombre, double precio, String marca, int existencias) throws SQLException {
+		Connection cn=getConexion();
+		PreparedStatement stm = cn.prepareStatement("UPDATE productos2 SET nombre_producto=? ,precio=? ,marca=?, existencias=? WHERE id_producto="+id);
+		stm.setString(1, nombre);
+		stm.setDouble(2,precio);
+		stm.setString(3, marca);
+		stm.setInt(4, existencias);
+		stm.executeUpdate();
+	}
+	
+	public static void eliminarProducto(int id) throws SQLException {
+		Connection cn=getConexion();
+		PreparedStatement stm = cn.prepareStatement("UPDATE productos2 SET nombre_producto=? ,precio=? ,marca=?, existencias=? WHERE id_producto="+id);
+		stm.setString(1, "?");
+		stm.setDouble(2, 0.0);
+		stm.setString(3, "?");
+		stm.setInt(4, 0);
+		stm.executeUpdate();
+	}
+	
+}
+
+class CVentanas {
 
 	public static void mostrarIngreso() {
 		JFrame frame = new JFrame();
@@ -182,3 +388,5 @@ public class CVentanas {
 	}
 	
 }
+
+

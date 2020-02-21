@@ -23,7 +23,6 @@ public class CConexion {
 			cn=DriverManager.getConnection(server, user, pass);
 		} catch(Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "hola");
 		}
 		return cn;
 	}
@@ -64,11 +63,7 @@ public class CConexion {
 	
 	public static void eliminarProducto(int id) throws SQLException {
 		Connection cn=getConexion();
-		PreparedStatement stm = cn.prepareStatement("UPDATE productos2 SET nombre_producto=? ,precio=? ,marca=?, existencias=? WHERE id_producto="+id);
-		stm.setString(1, "?");
-		stm.setDouble(2, 0.0);
-		stm.setString(3, "?");
-		stm.setInt(4, 0);
+		PreparedStatement stm = cn.prepareStatement("DELETE FROM productos2 WHERE id_producto="+id);
 		stm.executeUpdate();
 	}
 	

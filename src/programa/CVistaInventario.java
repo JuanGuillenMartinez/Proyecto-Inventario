@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -147,6 +146,5 @@ public class CVistaInventario {
 		} catch(Exception e) {
 			JOptionPane.showMessageDialog(null, e.getStackTrace());
 		}
-		
 	}
 }
