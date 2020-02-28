@@ -12,7 +12,7 @@ public class CConexion {
 
 	private static String db="inventario";
 	private static String user="root";
-	private static String pass="JSevenfoldStadia@16";
+	private static String pass="juan161299";
 	private static String host="localhost:3306	";
 	private static String server="jdbc:mysql://"+host+"/"+db;
 	
