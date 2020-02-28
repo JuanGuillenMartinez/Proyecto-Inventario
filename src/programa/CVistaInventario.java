@@ -1,6 +1,5 @@
 package programa;
 
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.sql.ResultSet;
@@ -28,7 +27,7 @@ public class CVistaInventario {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -39,20 +38,18 @@ public class CVistaInventario {
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Create the application.
 	 */
 	public CVistaInventario() {
-		initialize();
-		
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	public void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 606, 379);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -127,6 +124,7 @@ public class CVistaInventario {
 		btnRecargar.setBounds(408, 306, 131, 23);
 		frame.getContentPane().add(btnRecargar);
 		
+		frame.setVisible(true);
 		mostrar();
 	}
 	

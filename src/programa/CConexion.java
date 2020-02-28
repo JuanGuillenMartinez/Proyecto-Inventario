@@ -27,6 +27,32 @@ public class CConexion {
 		return cn;
 	}
 	
+	public static boolean iniciarSesion(String usuario, String contraseña) {
+		
+		PreparedStatement ps=null;
+		ResultSet rs=null;
+		Connection cn=getConexion();
+		
+		String query="SELECT correo, password FROM clientes WHERE correo = ?";
+		
+		try {
+			ps=cn.prepareStatement(query);
+			ps.setString(1, usuario);
+			rs=ps.executeQuery();
+			
+			if(rs.next()) {
+				if(contraseña.equals(rs.getString(2))) {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public static ResultSet getTabla(String consulta) {
 		Connection cn=getConexion();
 		Statement st;
